@@ -1,0 +1,81 @@
+<?php
+print_r($this->datosContacto);
+
+?>
+<form class="form-horizontal" role="form" id="formContacto">
+  <div class="form-group">
+    <label for="Nombre" class="col-sm-2 control-label">Nombre</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="Nombre" placeholder="Escriba aquí su nombre" value="<?php echo $this->nombre?>">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="Apellidos" class="col-sm-2 control-label">Apellidos</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="Apellidos" placeholder="Escriba aquí su apellido o apellidos" value="<?php echo $this->apellido?>">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="Direccion" class="col-sm-2 control-label">Dirección</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="Direccion" placeholder="Escriba aquí su dirección postal " value="<?php echo $this->direccion?>">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="Email" class="col-sm-2 control-label">Email</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="Email" placeholder="Escriba aquí su dirección de correo electrónico" value="<?php echo $this->email?>">
+    </div>
+  </div>
+
+  
+  <?php 
+  $primero = true;
+  foreach ($this->telefonos as $telefono) { 
+  	?>
+  	<div class="form-group form-inline" id="telefono">
+  	<?php
+  	if ($primero) { ?>
+		<label for="Telefono" class="col-sm-2 control-label">Telefono</label>
+		<?php $primero = false;}
+	else{ ?>
+		<label for="Telefono" class="col-sm-2 control-label"></label>
+	<?php
+	}
+  	?>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" class="TipoTelefono" placeholder="Tipo de teléfono" value="<?php echo $telefono->getTipo()?>">
+      <input type="text" class="form-control" class="Telefono" placeholder="Escriba aquí su número de teléfono" value="<?php echo $telefono->getNumero(); ?>">
+    </div>
+     </div>
+   <?php } ?>
+ 
+  
+  <div class="form-group" id="botonera">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="button" id="cancelar" class="btn btn-default">Cancelar</button>
+      <button type="button" id="restablecer" class="btn btn-default">Restablecer</button>
+      <button type="submit" class="btn btn-default">Grabar</button>
+    </div>
+  </div>
+</form>
+
+
+<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+<script type="text/javascript">
+	$("button[type=button]").click(function(){
+		var seleccionado = $(this).attr("id");
+		if(seleccionado == 'cancelar')
+		{
+			window.location.assign("/")
+		}
+		else if (seleccionado == 'restablecer')
+		{
+			$("input[type=text]").val("");
+		}
+	});
+
+</script>

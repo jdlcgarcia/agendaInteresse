@@ -1,0 +1,73 @@
+<button id="nuevoContacto" class="btn btn-success btn-small" data-toggle="modal" data-target="#modalContacto">
+	Nuevo Contacto
+	<span class="glyphicon glyphicon-plus"></span>
+</button>
+<div>
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Nombre</th>
+				<th>Apellido</th>
+				<th>Acciones</th>
+				<!--<td>Email</td>
+				<td>Telefonos</td>-->
+			</tr>
+		</thead>
+		<tbody>
+		<?php foreach ($this->entries as $entry): ?>
+			<tr>
+				<td><?php echo $this->escape($entry->nombre) ?></td>
+				<td><?php echo $this->escape($entry->apellido) ?></td>
+				<td><button id="ver<?php echo $entry->id?>" class="btn btn-default btn-info btn-xs" data-toggle="modal" data-target="#modalContacto"><span class="glyphicon glyphicon-search"></span> Ver detalles</button></td>
+			</tr>
+		<?php endforeach ?>
+		</tbody>
+	</table>
+</div>
+
+
+
+<script type="text/javascript" src="/bootstrap/js/jquery.min.js"></script>
+<script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+
+<div class="modal fade" id="modalContacto">
+	<div class="modal-dialog">
+		<div class="modal-content" id="objetivoModal">
+
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal --> 
+
+
+<script type="text/javascript">
+	$("body").on('click','button',function(){
+		var seleccionado = $(this).attr("id");
+		var clase = $(this).attr("class");
+		if(seleccionado == 'nuevoContacto')
+		{
+			$.ajax({
+				type: 'POST',
+				url: '/contacto/formulario',
+				dataType : 'html',
+				success: function( data ) {
+					$("#objetivoModal").html(data);           
+				}
+			});
+		}
+
+		else if (clase.indexOf("btn-info") != -1)
+		{
+			var number = seleccionado.replace(/[^0-9]/g, '');
+			$.ajax({
+				type: 'POST',
+				url: '/contacto/formulario',
+				data: { 
+					'id': number, 
+				},
+				success: function( data ) {
+					$("#objetivoModal").html(data);           
+				}
+			});
+		}
+	});
+</script>

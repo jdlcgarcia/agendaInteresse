@@ -1,0 +1,255 @@
+<form class="form-horizontal" role="form" id="formContacto">
+  <?php if (isset($this->id)){
+    ?>
+    <input type="hidden" id="ID" value="<?php echo $this->id ?>">
+    <?php
+  }
+
+  ?>
+  <div class="form-group">
+    <label for="Nombre" class="col-sm-2 control-label">Nombre</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="Nombre" placeholder="Escriba aquí su nombre" value="<?php if(isset($this->nombre)) echo $this->nombre ?>">
+    </div>
+
+  </div>
+
+  <div class="form-group">
+    <label for="Apellidos" class="col-sm-2 control-label">Apellidos</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="Apellidos" placeholder="Escriba aquí su apellido o apellidos"value="<?php if(isset($this->apellido)) echo $this->apellido ?>">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="Direccion" class="col-sm-2 control-label">Dirección</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="Direccion" placeholder="Escriba aquí su dirección postal " value="<?php if(isset($this->direccion)) echo $this->direccion ?>">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="Email" class="col-sm-2 control-label">Email</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="Email" placeholder="Escriba aquí su dirección de correo electrónico"value="<?php if(isset($this->email)) echo $this->email ?>">
+    </div>
+  </div>
+
+  <?php if (isset($this->telefonos))
+  {
+    foreach ($this->telefonos as $indice => $telefono){
+      ?>
+      <div class="form-group form-inline telefono">
+        <label for="Telefono" class="col-sm-2 control-label">
+<?php if ($indice == 0) echo 'Telefono'; else {?><button type="button" class="borrarTelefono btn btn-default btn-danger btn-xs"><span class="glyphicon glyphicon-minus-sign"></span> Eliminar</button><?php }?></label>
+        
+        <div class="col-sm-10">
+        
+          <input type="text" class="form-control" id="TipoTelefono<?php echo $indice+1 ?>" placeholder="Ej.: Casa, Oficina,..." value="<?php echo $telefono->tipo ?>">
+          <input type="text" class="form-control" id="Telefono<?php echo $indice+1 ?>" placeholder="Escriba aquí su número de teléfono" value="<?php echo $telefono->numero ?>">
+        </div>
+      </div>
+      <?php
+    }
+  }
+  else {
+    ?>
+    <div class="form-group form-inline telefono">
+      <label for="Telefono" class="col-sm-2 control-label">Telefono</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="TipoTelefono1" placeholder="Ej.: Casa, Oficina,...">
+        <input type="text" class="form-control" id="Telefono1" placeholder="Escriba aquí su número de teléfono">
+      </div>
+    </div>
+    <?php
+  }
+  ?>
+
+  
+
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="button" id="nuevoTelefono" class="btn btn-default btn-primary btn-xs">Nuevo teléfono <span class="glyphicon glyphicon-plus"></span></button>
+    </div>
+  </div>
+  <div class="form-group" id="botonera">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="button" id="cancelar" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+      <button type="button" id="restablecer" class="btn btn-default">Restablecer</button>
+      <?php if (isset($this->id))
+      {
+        ?>
+        <button type="submit" class="btn btn-success">Editar</button> 
+        <?php
+      }
+      else
+      {
+        ?>
+        <button type="submit" class="btn btn-success">Grabar</button> 
+        <?php
+      }
+      ?>
+    </div>
+  </div>
+</form>
+
+<script type="text/javascript">
+  $("form").on('click','button[type=button]',function(){
+    var seleccionado = $(this).attr("id");
+    var clase = $(this).attr("class");
+
+    if(seleccionado == 'cancelar')
+    {
+      window.location.assign("/")
+    }
+    else if (seleccionado == 'restablecer')
+    {
+      $("input[type=text]").val("");
+    }
+    else if (clase.indexOf("borrarTelefono") >= 0)
+    {
+      $(this).parent().parent().remove();
+    }
+
+  });
+
+  $("#nuevoTelefono").on('click',function(){
+    var numItems = $('.telefono').length +1;
+    var nuevoTelefono =  '<div class="form-group form-inline telefono">';
+    nuevoTelefono += '<label for="Telefono" class="col-sm-2 control-label"><button type="button" class="borrarTelefono btn btn-default btn-danger btn-xs"><span class="glyphicon glyphicon-minus-sign"></span> Eliminar</button></label>';
+    nuevoTelefono += '<div class="col-sm-10">';
+    nuevoTelefono += '<input type="text" class="form-control" id="TipoTelefono'+numItems+'" placeholder="Tipo de teléfono">';
+    nuevoTelefono += '<input type="text" class="form-control" id="Telefono'+numItems+'" placeholder="Escriba aquí su número de teléfono">';
+    nuevoTelefono += '</div> </div>';
+    $(this).parent().parent().before(nuevoTelefono);
+  });
+
+
+
+  $(function(){
+    $("form").on('focusout','input',function(){
+      var formElementId = $(this).attr("id");
+      validar(formElementId);
+    });
+  });
+
+
+  function validar(id)
+  {
+    selectedID = id.replace(/\d+/g, '');
+    $("#"+id).parent().find(".error").remove();
+    $("#"+id).parent().removeClass("has-error");
+    switch(selectedID)
+    {
+      case 'Nombre': case 'Apellidos': case 'Direccion': case 'TipoTelefono':
+      {
+        if($("#"+id).val()==""){
+          $("#"+id).parent().append("<span class='error'>El campo no puede estar vacío</span>"); 
+          $("#"+id).parent().addClass("has-error");
+        }
+        break;
+      }
+      case 'Email': 
+      {
+        if($("#"+id).val()==""){
+          $("#"+id).parent().append("<span class='error'>El campo no puede estar vacío</span>"); 
+          $("#"+id).parent().addClass("has-error");
+        }
+
+        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        if(!regex.test($("#"+id).val())){
+          $("#"+id).parent().append("<span class='error'>La dirección de e-Mail tiene un formato erróneo.</span>"); 
+          $("#"+id).parent().addClass("has-error");
+        }
+
+        break;
+      }
+      case 'Telefono':
+      {
+        if($("#"+id).val()==""){
+          $("#"+id).parent().append("<span class='error'>El campo no puede estar vacío</span>");
+          $("#"+id).parent().addClass("has-error");
+          break; 
+        }
+        var number = $("#"+id).val().replace(/[^0-9]/g, '')
+        if(number == ""){
+          $("#"+id).parent().append("<span class='error'>No ha introducido un número correcto.</span>");
+          $("#"+id).parent().addClass("has-error");
+          break; 
+        }
+      }
+    }
+  }
+
+  $(function()
+  {
+    $("form").submit(function(){
+      if($('.error').length != 0)
+        return false;
+      //Establecer los campos mínimos para guardar el contacto
+      if ($("#Nombre").val() == "" || 
+        $("#Apellidos").val() == "" ||
+        $("#Direccion").val() == "" || 
+        $("#Email").val() == "" || 
+        $("#TipoTelefono1").val() == "" || 
+        $("#Telefono1").val() == "")
+        return false;
+    });
+  });
+  $(function() {
+
+    $("form").submit(function (e) { 
+      e.preventDefault();
+
+      var nombre = $('#Nombre').val(),
+      apellidos = $('#Apellidos').val(),      
+      //telefono = $('#telefono').val(),
+      email = $('#Email').val(),
+      direccion = $('#Direccion').val();
+      
+      var telefonos = [];
+
+      //cuantosTelefonos = $('[id^="TipoTelefono"]').length;
+      $( "[id^='TipoTelefono']" ).each(function( index ) {
+        var telefono = {};
+        telefono['tipo'] = $(this).val();
+        telefono['numero'] = $(this).next().val();
+        telefonos.push(telefono);
+        
+      });
+      //console.log(JSON.stringify(telefonos));
+      
+      if ($("button[type=submit]").html() == "Grabar")
+      {        
+        $.ajax({
+          type: 'POST',
+          dataType: 'json',
+          url: '/contacto/grabar',
+          async: false,
+          data: { nombre: nombre, apellidos:apellidos, telefonos: telefonos, email: email, direccion: direccion },
+          success: function(json) {
+            
+          }
+        });
+      } 
+      else
+      {
+        var id = $('#ID').val();
+        $.ajax({
+          type: 'POST',
+          dataType: 'json',
+          url: '/contacto/editar',
+          async: false,
+          data: { id: id, nombre: nombre, apellidos:apellidos, telefonos: telefonos, email: email, direccion: direccion },
+          success: function(json) {
+            
+          }
+        });
+      }
+      
+      $('#modalContacto').modal('hide');
+      window.location.assign("/");
+    });
+}); 
+</script>
